@@ -1,0 +1,408 @@
+
+
+
+/* 1. Variables reutilizables: colores, tipografía, radios y medidas comunes. */
+:root {
+  --niebla: #E9E6E7;       
+  --pizarra: #5E5653;      
+  --pizarra-hover: #4A4442;
+  --acero: #7B7F8A;        
+  --arena: #AB978C;      
+  --bruma: #6B7C98;       
+  --bruma-texto: #4A5A73;  
+  --sec-texto: #4E525B;    
+  --ink: #1A1A1A;         
+  --blanco: #fff;
+  --danger: #9b7070;
+  --danger-bg: #FEE2E2;
+  --success: #166534;
+  --success-bg: #DCFCE7;
+
+  --font: "Clarity City", ui-sans-serif, system-ui, sans-serif;
+  --radio: 0.5rem;
+  --radio-sm: 0.375rem;
+  --max: 64rem;            
+  --tap: 2.75rem;         
+}
+
+/* 2. Base móvil primero: todo lo de aquí es la vista móvil. */
+*, *::before, *::after { box-sizing: border-box; }
+
+html { font-size: 100%; } 
+
+body {
+  margin: 0;
+  font-family: var(--font);
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--ink);
+  background: var(--niebla);
+}
+
+
+.container {
+  --pad: 1rem;
+  min-width: min(20rem, 100%); 
+  max-width: var(--max);
+  margin-inline: auto;
+  padding-inline: var(--pad);
+  background: var(--blanco);
+  min-height: 12.5rem;
+  border-top: 0.25rem solid var(--danger); 
+
+  /* 36rem (576px): aumenta el espacio lateral en pantallas medianas. */
+  @media (width >= 36rem) {
+    --pad: 1.25rem;
+  }
+  /* 48rem (768px): amplía el espacio y cambia el borde de estado. */
+  @media (width >= 48rem) {
+    --pad: 1.5rem;
+    border-top-color: var(--success); 
+  }
+  /* 64rem (1024px): usa más espacio lateral en escritorio. */
+  @media (width >= 64rem) {
+    --pad: 2rem;
+  }
+}
+
+
+.layout {
+  --layout-cols: 1fr;
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: var(--layout-cols);
+
+  > * { min-width: 0; }
+  > h1 { grid-column: 1 / -1; } 
+}
+
+.layout-dos {
+  @media (width >= 48rem) {
+    --layout-cols: 2fr 1fr;
+  }
+}
+
+.layout-filtros { 
+  @media (width >= 64rem) {
+    --layout-cols: 16rem 1fr;
+  }
+}
+
+.resumen {
+  @media (width >= 48rem) {
+    position: sticky;
+    top: 1rem;
+    align-self: start;
+    border: 1px solid var(--acero);
+    border-radius: var(--radio);
+    padding: 1rem;
+  }
+}
+
+
+.grid-productos {
+  --prod-cols: 2;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(var(--prod-cols), 1fr);
+
+  @media (width >= 36rem) { --prod-cols: 3; }
+  /* 64rem (1024px): muestra cuatro productos por fila. */
+  @media (width >= 64rem) { --prod-cols: 4; }
+}
+            
+
+.header-inner, .nav, .fila, .acciones, .badges {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+
+header.sitio {
+  background: var(--pizarra);
+  color: var(--blanco);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+
+  .container.header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    max-width: var(--max);
+    margin-inline: auto;
+    padding-inline: var(--pad);
+    background: transparent;
+    min-height: 0;
+    border-top: none;
+    padding-block: 0.75rem;
+
+    @media (orientation: landscape) and (height <= 30rem) {
+      padding-block: 0.25rem;
+    }
+  }
+
+  .nav {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+
+    a {
+      color: var(--blanco);
+      text-decoration: underline;
+      text-underline-offset: 0.2em;
+      font-weight: 500;
+      font-size: 0.95rem;
+      min-height: var(--tap);
+      display: inline-flex;
+      align-items: center;
+      padding: 0.35rem 0.75rem;
+      border-radius: 4px;
+      transition: background-color 0.2s ease, opacity 0.2s ease;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.1);
+      }
+
+      &[aria-current="page"] {
+        background: transparent;
+        font-weight: 600;
+      }
+    }
+  }
+}
+
+nav a[aria-current="page"] {
+  text-decoration: underline;
+  font-weight: 700;
+}
+
+
+h1 { font-size: 2rem;    line-height: 2.5rem;  margin: 1.5rem 0 1rem; }
+h2 { font-size: 1.5rem;  line-height: 2rem;    margin: 1rem 0 0.5rem; }
+h3 { font-size: 1.25rem; line-height: 1.75rem; margin: 0.75rem 0 0.25rem; }
+
+p, li { max-width: 75ch; }
+
+.price {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  font-size: 1.25rem;
+}
+
+
+code { overflow-wrap: anywhere; }
+
+
+.tabla-scroll { overflow-x: auto; }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--blanco);
+  font-size: 0.875rem;
+
+  caption {
+    text-align: left;
+    font-weight: 600;
+    padding-bottom: 0.5rem;
+    color: var(--pizarra);
+  }
+  th, td {
+    text-align: left;
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--niebla);
+  }
+  thead th {
+    background: var(--niebla);
+    color: var(--ink);
+  }
+  tbody th[scope="row"] { font-weight: 700; }
+}
+
+
+.card {
+  border: 1px solid var(--acero);
+  border-radius: var(--radio);
+  padding: 1rem;
+  background: var(--blanco);
+  display: flex; 
+  flex-direction: column;
+  gap: 0.5rem;
+
+  
+  .card-pie {
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .price { display: block; } 
+}
+
+.producto-imagen {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: contain;
+  border-radius: var(--radio-sm);
+}
+
+.badge {
+  border-radius: 999px;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+
+  &.badge-ok   { background: var(--success-bg); color: var(--success); }
+  &.badge-bajo { background: var(--arena);      color: var(--ink); }
+}
+
+button, .btn {
+  min-height: var(--tap);
+  min-width: var(--tap);
+  padding: 0.5rem 1rem;
+  border-radius: var(--radio-sm);
+  font: inherit;
+  cursor: pointer;
+
+  
+  @media (any-pointer: coarse) {
+    min-height: 3rem;
+    padding-inline: 1.25rem;
+  }
+}
+
+.btn-primario {
+  background: var(--pizarra);
+  color: var(--blanco);
+  border: 1px solid var(--pizarra);
+
+ 
+  @media (any-hover: hover) {
+    &:hover { background: var(--pizarra-hover); }
+  }
+}
+
+
+:focus-visible {
+  outline: 3px solid var(--bruma);
+  outline-offset: 2px;
+}
+
+
+form {
+  display: grid;
+  gap: 1rem;
+
+  fieldset {
+    border: 1px solid var(--acero);
+    border-radius: var(--radio);
+    padding: 1rem;
+
+    legend {
+      padding-inline: 0.5rem;
+      font-weight: 600;
+    }
+  }
+}
+
+label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--pizarra);
+}
+
+input, select, textarea {
+  width: 100%;
+  min-height: var(--tap);
+  font: inherit;
+  padding: 0.5rem;
+  border: 1px solid var(--acero);
+  border-radius: var(--radio-sm);
+  background: var(--blanco);
+
+  &[aria-invalid="true"] { border: 2px solid var(--danger); }
+
+
+  &:is([type="checkbox"], [type="radio"]) {
+    width: 1.5rem;
+    min-height: 1.5rem;
+    flex: none;
+  }
+}
+
+
+.opcion {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.ayuda {
+  font-size: 0.875rem;
+  color: var(--sec-texto);
+  margin: 0.25rem 0 0;
+}
+
+.error {
+  font-size: 0.875rem;
+  color: var(--danger);
+  background: var(--danger-bg);
+  padding: 0.5rem;
+  border-radius: var(--radio-sm);
+}
+
+
+.skip {
+  position: absolute;
+  left: -100vw;
+
+  &:focus {
+    left: 1rem;
+    top: 1rem;
+    background: var(--blanco);
+    padding: 0.5rem 1rem;
+    z-index: 10;
+  }
+}
+
+
+.solo-js {
+  @media (scripting: none) {
+    display: none;
+  }
+}
+
+
+@media print {
+  body { background: var(--blanco); color: #000; }
+  header.sitio, .skip, button, .btn, .resumen { display: none; }
+  .container { max-width: none; border-top: none; }
+  .card { break-inside: avoid; }
+}
+
+footer {
+  padding-block: 1rem;
+  border-top: 1px solid var(--acero);
+
+  .contacto {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    font-style: normal; 
+
+    @media (width >= 48rem) {
+      flex-direction: row;
+      gap: 2rem;
+    }
+
+    p { margin: 0; }
+    a { color: var(--bruma-texto); } 
+  }
+}

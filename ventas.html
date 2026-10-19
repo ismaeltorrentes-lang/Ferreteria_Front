@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ventas — Ferretería Pescado Volador</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Clarity+City:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body data-vista="ventas">
+  <a class="skip" href="#contenido">Saltar al contenido</a>
+  <header class="sitio">
+    <div class="container header-inner">
+      <nav class="nav" aria-label="Principal">
+        <a href="index.html">Catálogo</a>
+        <a href="ventas.html" aria-current="page">Ventas</a>
+      </nav>
+      <p class="acciones">
+        <button id="btn-expirar" type="button">Simular expiración</button>
+        <button id="btn-salir" type="button">Cerrar sesión</button>
+      </p>
+    </div>
+  </header>
+
+  <div class="container">
+    <main id="contenido" class="layout layout-dos">
+      <h1>Ventas</h1>
+      <noscript><p class="error">Esta pantalla necesita JavaScript para consumir la API (Laboratorio 9).</p></noscript>
+
+      <section aria-labelledby="t-venta">
+        <h2 id="t-venta">Nueva venta</h2>
+        <form id="venta-form" novalidate>
+          <fieldset>
+            <legend>Venta y cobro</legend>
+
+            <label for="producto_sku">Producto (SKU o pistola)</label>
+            <input id="producto_sku" name="producto_sku" type="text" autocomplete="off" placeholder="SKU-MART-016-001" aria-describedby="ayuda-producto">
+            <p class="ayuda" id="ayuda-producto">Al salir del campo, la API busca el producto y calcula el total.</p>
+
+            <label for="cantidad">Cantidad</label>
+            <input id="cantidad" name="cantidad" type="number" min="1" value="1" required>
+
+            <label for="cliente">Cliente</label>
+            <select id="cliente" name="id_customer" aria-describedby="ayuda-cliente err-id_customer">
+              <option value="">Seleccione…</option>
+            </select>
+            <p class="ayuda" id="ayuda-cliente">Elija mostrador para una venta rápida.</p>
+            <p class="ayuda" data-error="id_customer" id="err-id_customer" aria-live="polite"></p>
+
+            <label for="sale_date">Fecha de venta</label>
+            <input id="sale_date" name="sale_date" type="date" required aria-describedby="err-sale_date">
+            <p class="ayuda" data-error="sale_date" id="err-sale_date" aria-live="polite"></p>
+
+            <label for="total">Total (₡)</label>
+            <input id="total" name="total" type="number" min="0" step="0.01" required aria-describedby="err-total">
+            <p class="ayuda" data-error="total" id="err-total" aria-live="polite"></p>
+
+            <label for="tax_amount">Impuesto (₡)</label>
+            <input id="tax_amount" name="tax_amount" type="number" min="0" step="0.01" aria-describedby="err-tax_amount">
+            <p class="ayuda" data-error="tax_amount" id="err-tax_amount" aria-live="polite"></p>
+
+            <label for="discount">Descuento (₡)</label>
+            <input id="discount" name="discount" type="number" min="0" step="0.01" aria-describedby="err-discount">
+            <p class="ayuda" data-error="discount" id="err-discount" aria-live="polite"></p>
+
+            <label for="status">Estado</label>
+            <select id="status" name="status" required aria-describedby="err-status">
+              <option value="completada">Completada</option>
+              <option value="pendiente">Pendiente</option>
+              <option value="cancelada">Cancelada</option>
+            </select>
+            <p class="ayuda" data-error="status" id="err-status" aria-live="polite"></p>
+          </fieldset>
+
+          <p class="acciones">
+            <button class="btn-primario" type="submit">Confirmar venta</button>
+            <button type="reset">Limpiar</button>
+            <button id="btn-cancelar-edicion" type="button" hidden>Cancelar edición</button>
+          </p>
+          <p id="estado-venta" class="ayuda" role="status" aria-live="polite"></p>
+        </form>
+      </section>
+
+      <section aria-labelledby="t-hist">
+        <h2 id="t-hist">Historial</h2>
+        <div id="historial-estado" role="status" aria-live="polite"></div>
+        <div id="historial" class="grid-productos"></div>
+        <nav id="historial-paginacion" aria-label="Paginación del historial"></nav>
+      </section>
+    </main>
+    <footer>
+      <address class="contacto">
+        <p>Correo electrónico: info@ferreteriapescadofeliz.com</p>
+        <p>Teléfono: (506) 2665-1308</p>
+      </address>
+    </footer>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

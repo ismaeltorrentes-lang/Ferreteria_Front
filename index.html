@@ -1,13 +1,62 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ferreteriafront</title>
-  </head>
-  <body>
-    <div id="app"></div>
-    <script type="module" src="/src/main.js"></script>
-  </body>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Catálogo — Ferretería Pescado Volador</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Clarity+City:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body data-vista="catalogo">
+  <a class="skip" href="#contenido">Saltar al contenido</a>
+  <header class="sitio">
+    <div class="container header-inner">
+      <nav class="nav" aria-label="Principal">
+        <a href="index.html" aria-current="page">Catálogo</a>
+        <a href="ventas.html">Ventas</a>
+      </nav>
+      <p class="acciones">
+        <button id="btn-expirar" type="button">Simular expiración</button>
+        <button id="btn-salir" type="button">Cerrar sesión</button>
+      </p>
+    </div>
+  </header>
+
+  <div class="container">
+    <main id="contenido" class="layout layout-filtros">
+      <h1>Catálogo</h1>
+      <noscript><p class="error">Esta pantalla necesita JavaScript para consumir la API (Laboratorio 9).</p></noscript>
+
+      <section aria-labelledby="t-filtros">
+        <h2 id="t-filtros">Filtros</h2>
+        <form id="filtros-form" role="search">
+          <label for="q">Buscar por nombre o SKU</label>
+          <input id="q" name="q" type="search" autocomplete="off" aria-describedby="ayuda-q">
+          <p class="ayuda" id="ayuda-q">Ej. martillo, SKU-MART-016-001 · se busca automáticamente tras 300&nbsp;ms de inactividad.</p>
+          <p class="acciones">
+            <button class="btn-primario" type="submit">Buscar</button>
+          </p>
+        </form>
+      </section>
+
+      <section aria-labelledby="t-prod">
+        <h2 id="t-prod">Productos</h2>
+        <div id="lista-estado" role="status" aria-live="polite"></div>
+        <div id="productos" class="grid-productos"></div>
+        <nav id="paginacion" aria-label="Paginación de productos"></nav>
+      </section>
+    </main>
+    <footer>
+      <address class="contacto">
+        <p>Correo electrónico: info@ferreteriapescadofeliz.com</p>
+        <p>Teléfono: (506) 2665-1308</p>
+      </address>
+    </footer>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
 </html>
