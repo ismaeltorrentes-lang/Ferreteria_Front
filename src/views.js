@@ -120,16 +120,29 @@ function badgeStock(producto) {
 }
 
 export function pintarProductos(datos) {
-  return datos.map((producto) =>
-    nodo('article', { clase: 'card' }, [
+  return datos.map((producto) => {
+    const sinCodigo = 'codigo_barras' in producto && !producto.codigo_barras
+
+    return nodo('article', { clase: 'card' }, [
       nodo('h3', { texto: producto.nombre }),
       nodo('p', { texto: `${producto.sku} · ${colones(producto.precio)}` }),
       producto.descripcion
         ? nodo('p', { clase: 'ayuda', texto: producto.descripcion })
         : null,
       nodo('p', { clase: 'badges' }, [badgeStock(producto)]),
-    ]),
-  )
+      nodo('div', { clase: 'etiqueta-impresion', hidden: true }),
+      nodo('p', { clase: 'error error-impresion', role: 'alert', hidden: true }),
+      nodo('p', { clase: 'acciones' }, [
+        nodo('button', {
+          type: 'button',
+          clase: 'btn-primario',
+          texto: sinCodigo ? 'Sin código' : 'Imprimir',
+          disabled: sinCodigo,
+          'data-imprimir': producto.id,
+        }),
+      ]),
+    ])
+  })
 }
 
 export function pintarVentas(datos, nombreCliente) {

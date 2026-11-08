@@ -136,6 +136,11 @@ export class ClienteApi {
     })
   }
 
+  async obtenerCodigoBarras(id, signal) {
+    const datos = await this.#solicitud(`/products/${id}/barcode`, { signal })
+    return datos?.data ?? datos
+  }
+
   async listarClientes(signal) {
     return this.#solicitud('/customers', { query: { per_page: 50 }, signal })
   }

@@ -112,7 +112,6 @@ function iniciarCatalogo() {
     })
   }
 
- 
   let temporizador = null
   const buscar = () => {
     const valor = campoBusqueda.value.trim()
@@ -127,11 +126,55 @@ function iniciarCatalogo() {
     temporizador = setTimeout(buscar, 300)
   })
 
- 
   document.querySelector('#filtros-form')?.addEventListener('submit', (evento) => {
     evento.preventDefault()
     clearTimeout(temporizador)
     buscar()
+  })
+
+  zonaContenido.addEventListener('click', async (evento) => {
+    const boton = evento.target.closest('[data-imprimir]')
+    if (!boton) return
+
+    const id = boton.dataset.imprimir
+    const tarjeta = boton.closest('.card')
+    const contenedorEtiqueta = tarjeta.querySelector('.etiqueta-impresion')
+    const zonaError = tarjeta.querySelector('.error-impresion')
+
+    zonaError.hidden = true
+    zonaError.textContent = ''
+
+    boton.disabled = true
+    const textoOriginal = boton.textContent
+    boton.textContent = 'Generando…'
+
+    const etiqueta = await llamada(
+      () => api.obtenerCodigoBarras(id),
+      (error) => {
+        zonaError.textContent = error.message || 'No se pudo obtener el código de barras.'
+        zonaError.hidden = false
+      },
+    )
+
+    boton.disabled = false
+    boton.textContent = textoOriginal
+    if (!etiqueta) return
+
+    contenedorEtiqueta.replaceChildren()
+    const contenedorSvg = document.createElement('div')
+    contenedorSvg.className = 'barcode-svg'
+    contenedorSvg.innerHTML = etiqueta.svg
+
+    const textoCodigo = document.createElement('p')
+    textoCodigo.className = 'barcode-numero'
+    textoCodigo.textContent = etiqueta.codigo_barras
+
+    contenedorEtiqueta.append(contenedorSvg, textoCodigo)
+    contenedorEtiqueta.hidden = false
+
+    tarjeta.classList.add('imprimir-activo')
+    window.print()
+    tarjeta.classList.remove('imprimir-activo')
   })
 
   document.querySelector('#btn-salir')?.addEventListener('click', async () => {
