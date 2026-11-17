@@ -1,4 +1,4 @@
-  name: CI del frontend
+name: CI del frontend
 
 on:
   push:
