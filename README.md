@@ -16,7 +16,8 @@ La maqueta visual corresponde al Laboratorio 8 (`FerreteriaPescadoFeliz/Maqueta`
 ### Pantallas
 
 - `index.html` — Catálogo: listado paginado con estados de carga, vacío, error (con reintento) y datos; búsqueda con debounce de 300 ms y cancelación de solicitudes en vuelo.
-- `ventas.html` — Formulario de venta con errores de validación 422 por campo (creación y edición) e historial paginado.
+- `ventas.html` — Formulario de venta con errores de validación 422 por campo; permite crear ventas y editar una venta seleccionada desde el historial.
+- `historial.html` — Historial paginado de ventas, con acceso al formulario de edición.
 - `login.html` — Inicio de sesión (token Sanctum de 2 horas). Ante un 401 la aplicación regresa aquí sin perder los datos del formulario.
 
 ### Uso
@@ -24,7 +25,7 @@ La maqueta visual corresponde al Laboratorio 8 (`FerreteriaPescadoFeliz/Maqueta`
 
 npm install
 npm run dev      # http://localhost:5173
-npm run build    # build de producción (3 páginas)
+npm run build    # build de producción (4 páginas)
 
 
 
