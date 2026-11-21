@@ -110,6 +110,10 @@ body {
   /* 64rem (1024px): muestra cuatro productos por fila. */
   @media (width >= 64rem) { --prod-cols: 4; }
 }
+
+#historial.grid-productos {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 8rem), 1fr));
+}
             
 
 .header-inner, .nav, .fila, .acciones, .badges {
@@ -263,12 +267,16 @@ table {
 }
 
 button, .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   min-height: var(--tap);
   min-width: var(--tap);
   padding: 0.5rem 1rem;
   border-radius: var(--radio-sm);
   font: inherit;
   cursor: pointer;
+  text-decoration: none;
 
   
   @media (any-pointer: coarse) {

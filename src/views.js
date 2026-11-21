@@ -155,11 +155,10 @@ export function pintarVentas(datos, nombreCliente) {
         nodo('span', { clase: 'ayuda', texto: `Fecha: ${String(venta.sale_date).slice(0, 10)}` }),
       ]),
       nodo('p', { clase: 'acciones' }, [
-        nodo('button', {
-          type: 'button',
-          clase: 'btn-primario',
+        nodo('a', {
+          href: `ventas.html?editar=${encodeURIComponent(venta.id)}`,
+          class: 'btn btn-primario',
           texto: 'Editar',
-          'data-editar': venta.id,
         }),
       ]),
     ]),

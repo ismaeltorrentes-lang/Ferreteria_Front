@@ -3,6 +3,7 @@ const CLAVE_EXPIRA = 'ferreteria:token-expira'
 
 const URL_BASE = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api'
 
+
 export class ErrorApi extends Error {
   constructor({ status = 0, message = 'Error de la API', errors = {} } = {}) {
     super(message)
@@ -70,6 +71,8 @@ export class ClienteApi {
     return url.toString()
   }
 
+
+   
   async #solicitud(ruta, { metodo = 'GET', cuerpo, query, signal } = {}) {
     const encabezados = { Accept: 'application/json' }
 
@@ -150,6 +153,11 @@ export class ClienteApi {
       query: { page, per_page: perPage, sort: 'id', direction: 'desc' },
       signal,
     })
+  }
+
+  async obtenerVenta(id, signal) {
+    const datos = await this.#solicitud(`/sales/${id}`, { signal })
+    return datos?.data ?? datos
   }
 
   async crearVenta(cuerpo) {

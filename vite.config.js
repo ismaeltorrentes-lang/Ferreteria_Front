@@ -19,6 +19,7 @@ export default defineConfig(({ command, mode }) => {
         input: {
           catalogo: resolve(import.meta.dirname, 'index.html'),
           ventas: resolve(import.meta.dirname, 'ventas.html'),
+          historial: resolve(import.meta.dirname, 'historial.html'),
           login: resolve(import.meta.dirname, 'login.html'),
         },
       },

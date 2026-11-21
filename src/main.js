@@ -197,11 +197,6 @@ function iniciarVentas() {
 
   const form = document.querySelector('#venta-form')
   const selectClientes = document.querySelector('#cliente')
-  const zonaEstado = document.querySelector('#historial-estado')
-  const zonaContenido = document.querySelector('#historial')
-  const zonaPaginacion = document.querySelector('#historial-paginacion')
-
-  let controladorVentas = null
   let controladorClientes = null
 
   const cuerpoDesdeFormulario = (valores) => ({
@@ -214,54 +209,10 @@ function iniciarVentas() {
   })
 
   function pintar() {
-    const { historial, clientes, venta } = tienda.obtener()
+    const { clientes, venta } = tienda.obtener()
 
     renderClientes(selectClientes, clientes)
-
-    renderizarLista({
-      zonaEstado,
-      zonaContenido,
-      zonaPaginacion,
-      seccion: historial,
-      etiqueta: 'ventas',
-      pintar: (datos) =>
-        pintarVentas(datos, (v) => nombreCliente(clientes.datos, v.id_customer)),
-      onReintentar: () => cargarHistorial(),
-      onPagina: (pagina) => {
-        tienda.actualizarSeccion('historial', { pagina })
-        cargarHistorial()
-      },
-    })
-
     renderFormularioVenta(venta, form)
-  }
-
-  function nombreCliente(clientes, id) {
-    if (!id) return 'Mostrador'
-    const cliente = clientes.find((c) => c.id_customer === id)
-    return cliente ? `${cliente.first_name} ${cliente.last_name1}`.trim() : `Cliente #${id}`
-  }
-
-  async function cargarHistorial() {
-    controladorVentas?.abort()
-    controladorVentas = new AbortController()
-
-    tienda.actualizarSeccion('historial', { estado: 'carga', error: null })
-    const { pagina } = tienda.obtener().historial
-
-    const respuesta = await llamada(
-      () => api.listarVentas({ page: pagina }, controladorVentas.signal),
-      (error) =>
-        tienda.actualizarSeccion('historial', { estado: 'error', error: error.message }),
-    )
-    if (!respuesta) return
-
-    tienda.actualizarSeccion('historial', {
-      estado: respuesta.data.length ? 'datos' : 'vacio',
-      datos: respuesta.data,
-      meta: respuesta.meta,
-      error: null,
-    })
   }
 
   async function cargarClientes() {
@@ -357,7 +308,6 @@ function iniciarVentas() {
         valores: esEdicion ? venta.valores : valorFormulario({}),
       })
       if (!esEdicion) limpiarFormularioVenta()
-      await cargarHistorial()
     } catch (error) {
       if (esAborto(error)) return
       if (error instanceof ErrorApi && error.status === 401) {
@@ -372,34 +322,6 @@ function iniciarVentas() {
             : { formulario: [error?.message || 'No se pudo guardar la venta.'] },
       })
     }
-  })
-
-  zonaContenido.addEventListener('click', (evento) => {
-    const boton = evento.target.closest('[data-editar]')
-    if (!boton) return
-
-    const id = Number(boton.dataset.editar)
-    const { historial } = tienda.obtener()
-    const venta = historial.datos.find((v) => v.id === id)
-    if (!venta) return
-
-    tienda.actualizarSeccion('venta', {
-      modo: 'editar',
-      edicionId: id,
-      errores: {},
-      mensaje: `Editando la venta #${id}.`,
-      valores: valorFormulario({
-        id_customer: venta.id_customer ?? '',
-        sale_date: String(venta.sale_date).slice(0, 10),
-        total: String(venta.total),
-        tax_amount: venta.tax_amount == null ? '' : String(venta.tax_amount),
-        discount: venta.discount == null ? '' : String(venta.discount),
-        status: venta.status,
-        producto_sku: tienda.obtener().venta.valores.producto_sku ?? '',
-        cantidad: tienda.obtener().venta.valores.cantidad ?? '1',
-      }),
-    })
-    form.scrollIntoView({ behavior: 'smooth', block: 'start' })
   })
 
   document.querySelector('#btn-cancelar-edicion')?.addEventListener('click', () => {
@@ -429,6 +351,127 @@ function iniciarVentas() {
       mensaje: 'Sesión restaurada: no se perdieron los datos del formulario.',
     })
   }
+
+  tienda.suscribir(pintar)
+  pintar()
+  cargarClientes()
+  cargarVentaEdicion()
+
+  async function cargarVentaEdicion() {
+    const id = Number(new URLSearchParams(location.search).get('editar'))
+    if (!Number.isSafeInteger(id) || id < 1) return
+
+    tienda.actualizarSeccion('venta', { enviando: true, mensaje: `Cargando venta #${id}…` })
+    const venta = await llamada(
+      () => api.obtenerVenta(id),
+      (error) =>
+        tienda.actualizarSeccion('venta', {
+          enviando: false,
+          errores: { formulario: [error.message] },
+        }),
+    )
+    if (!venta) return
+
+    tienda.actualizarSeccion('venta', {
+      enviando: false,
+      modo: 'editar',
+      edicionId: id,
+      errores: {},
+      mensaje: `Editando la venta #${id}.`,
+      valores: valorFormulario({
+        ...tienda.obtener().venta.valores,
+        id_customer: venta.id_customer ?? '',
+        sale_date: String(venta.sale_date).slice(0, 10),
+        total: String(venta.total),
+        tax_amount: venta.tax_amount == null ? '' : String(venta.tax_amount),
+        discount: venta.discount == null ? '' : String(venta.discount),
+        status: venta.status,
+      }),
+    })
+  }
+}
+
+function iniciarHistorial() {
+  if (!exigirSesion()) return
+
+  const zonaEstado = document.querySelector('#historial-estado')
+  const zonaContenido = document.querySelector('#historial')
+  const zonaPaginacion = document.querySelector('#historial-paginacion')
+  let controladorVentas = null
+  let controladorClientes = null
+
+  function pintar() {
+    const { historial, clientes } = tienda.obtener()
+    renderizarLista({
+      zonaEstado,
+      zonaContenido,
+      zonaPaginacion,
+      seccion: historial,
+      etiqueta: 'ventas',
+      pintar: (datos) =>
+        pintarVentas(datos, (venta) => nombreCliente(clientes.datos, venta.id_customer)),
+      onReintentar: cargarHistorial,
+      onPagina: (pagina) => {
+        tienda.actualizarSeccion('historial', { pagina })
+        cargarHistorial()
+      },
+    })
+  }
+
+  function nombreCliente(clientes, id) {
+    if (!id) return 'Mostrador'
+    const cliente = clientes.find((item) => item.id_customer === id)
+    return cliente
+      ? `${cliente.first_name} ${cliente.last_name1}`.trim()
+      : `Cliente #${id}`
+  }
+
+  async function cargarHistorial() {
+    controladorVentas?.abort()
+    controladorVentas = new AbortController()
+
+    tienda.actualizarSeccion('historial', { estado: 'carga', error: null })
+    const { pagina } = tienda.obtener().historial
+    const respuesta = await llamada(
+      () => api.listarVentas({ page: pagina }, controladorVentas.signal),
+      (error) =>
+        tienda.actualizarSeccion('historial', { estado: 'error', error: error.message }),
+    )
+    if (!respuesta) return
+
+    tienda.actualizarSeccion('historial', {
+      estado: respuesta.data.length ? 'datos' : 'vacio',
+      datos: respuesta.data,
+      meta: respuesta.meta,
+      error: null,
+    })
+  }
+
+  async function cargarClientes() {
+    controladorClientes?.abort()
+    controladorClientes = new AbortController()
+    const respuesta = await llamada(
+      () => api.listarClientes(controladorClientes.signal),
+      (error) => console.error('No se pudieron cargar los clientes del historial.', error),
+    )
+    if (!respuesta) return
+
+    tienda.actualizarSeccion('clientes', {
+      estado: 'datos',
+      datos: respuesta.data,
+      error: null,
+    })
+  }
+
+  document.querySelector('#btn-salir')?.addEventListener('click', async () => {
+    await llamada(() => api.cerrarSesion())
+    location.replace('login.html')
+  })
+
+  document.querySelector('#btn-expirar')?.addEventListener('click', () => {
+    api.limpiarSesion()
+    expirarSesion()
+  })
 
   tienda.suscribir(pintar)
   pintar()
@@ -482,4 +525,5 @@ function iniciarLogin() {
 
 if (vista === 'catalogo') iniciarCatalogo()
 else if (vista === 'ventas') iniciarVentas()
+else if (vista === 'historial') iniciarHistorial()
 else if (vista === 'login') iniciarLogin()
