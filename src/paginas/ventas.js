@@ -8,7 +8,7 @@ import { crearHistorialVentas } from './ventas-historial.js'
 import { crearLineasVenta, subtotalDeLinea } from './ventas-lineas.js'
 
 // Campos del formulario de cabecera que pueden tener error de la API.
-const CAMPOS_CABECERA = ['id_customer', 'sale_date', 'status', 'tax_amount', 'discount', 'total']
+const CAMPOS_CABECERA = ['id_customer', 'sale_date', 'status', 'total']
 
 // Fecha de hoy en formato AAAA-MM-DD (hora local).
 function hoyISO() {

@@ -83,7 +83,7 @@ src/
 | Página | Permiso para verla | Qué permite |
 |---|---|---|
 | `index.html` (Productos) | `view products` | Buscar por nombre, SKU o código de barras; ver el detalle en una ventana emergente con su código de barras; resumen de inventario. Con permisos: crear, editar y eliminar producto. |
-| `ventas.html` (Ventas) | `view sales` | Crear una venta con una o varias líneas de producto (cantidad editable y total automático), editar sus datos e historial paginado. Con permisos: eliminar venta. |
+| `ventas.html` (Ventas) | `view sales` | Crear una venta con una o varias líneas de producto (cantidad editable y total automático). Impuesto y descuento no se editan en el formulario: las ventas nuevas usan 0 y al editar se conservan sus valores. Incluye historial paginado. Con permisos: eliminar venta. |
 | `recepcion.html` (Recepción) | `receive purchases` | Buscar detalles pendientes por código de barras y recibirlos con la cantidad exacta. |
 | `compras.html` (Compras) | `view purchases` | Listado de compras de solo lectura. Los detalles se abren en una ventana emergente. |
 | `proveedores.html` (Proveedores) | `view suppliers` | Lista de proveedores. Con permisos: crear, editar y eliminar. |
@@ -170,3 +170,7 @@ iniciarPagina('view categories', () => {
 - **Compras y permisos:** un usuario que no es admin solo ve las compras que él registró. Es una regla del backend.
 - **Fecha de movimientos:** la columna Fecha de Movimientos muestra un guion hasta que el backend incluya la fecha (`created_at`) en `InventoryMovementResource`.
 - **Permiso de bodeguero para proveedores:** el seeder del backend todavía le da `create suppliers`. Hasta que se quite, la pantalla de proveedores le muestra el formulario de alta.
+
+## Evidencias y cambios recientes
+
+El registro detallado de las modificaciones realizadas y el índice de las capturas se encuentra en [`evidencias/cambios-recientes.md`](evidencias/cambios-recientes.md). Las imágenes están organizadas en [`evidencias/nuevo-front/`](evidencias/nuevo-front/) y [`evidencias/capturas/`](evidencias/capturas/).

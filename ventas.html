@@ -62,13 +62,8 @@
             </select>
             <p class="ayuda" data-error="status" id="err-status" aria-live="polite"></p>
 
-            <label for="tax_amount">Impuesto (₡)</label>
-            <input id="tax_amount" name="tax_amount" type="number" min="0" step="0.01" value="0" aria-describedby="err-tax_amount">
-            <p class="ayuda" data-error="tax_amount" id="err-tax_amount" aria-live="polite"></p>
-
-            <label for="discount">Descuento (₡)</label>
-            <input id="discount" name="discount" type="number" min="0" step="0.01" value="0" aria-describedby="err-discount">
-            <p class="ayuda" data-error="discount" id="err-discount" aria-live="polite"></p>
+            <input id="tax_amount" name="tax_amount" type="hidden" value="0">
+            <input id="discount" name="discount" type="hidden" value="0">
 
             <div id="campo-total" hidden>
               <label for="total">Total (₡)</label>

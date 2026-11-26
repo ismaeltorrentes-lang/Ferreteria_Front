@@ -318,9 +318,6 @@ export function crearLineasVenta() {
     if (entrada) cambiarCantidad(Number(entrada.dataset.cantidad), entrada.value)
   })
 
-  $('#tax_amount').addEventListener('input', pintarTotales)
-  $('#discount').addEventListener('input', pintarTotales)
-
   // ----- Interfaz pública -----
 
   return {
