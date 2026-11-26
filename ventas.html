@@ -81,9 +81,13 @@
             <legend>Productos</legend>
 
             <div class="barra-herramientas">
-              <div>
-                <label for="linea-sku">SKU del producto</label>
-                <input id="linea-sku" type="text" autocomplete="off" placeholder="Ej. SKU-MART-016-001">
+              <div class="combobox">
+                <label for="linea-producto">Producto (nombre o SKU)</label>
+                <input id="linea-producto" type="text" autocomplete="off" role="combobox"
+                  aria-autocomplete="list" aria-expanded="false" aria-controls="linea-sugerencias"
+                  placeholder="Ej. carretillo o SKU-MARK-4543-34">
+                <ul id="linea-sugerencias" class="lista-sugerencias" role="listbox"
+                  aria-label="Productos sugeridos" hidden></ul>
               </div>
               <div>
                 <label for="linea-cantidad">Cantidad</label>

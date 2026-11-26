@@ -186,6 +186,35 @@ iniciarPagina('view sales', () => {
     if (Object.keys(errores).length) return mostrarEstado('Revise los datos marcados.', true)
 
     botonConfirmar.disabled = true
+    mostrarEstado('Verificando existencias…')
+    const inventarios = await Promise.all(
+      productos.map((linea) => llamada(
+        () => api.obtenerProducto(linea.id),
+        (error) => mostrarEstado(
+          `No se pudo verificar el stock de ${linea.nombre}: ${error.message}`,
+          true,
+        ),
+      )),
+    )
+    if (inventarios.some((producto) => !producto)) {
+      botonConfirmar.disabled = false
+      return
+    }
+
+    lineas.actualizarStock(inventarios)
+    const insuficiente = productos.find((linea, indice) =>
+      linea.cantidad > Number(inventarios[indice].cantidad_stock ?? 0),
+    )
+    if (insuficiente) {
+      const disponible = Number(inventarios.find((producto) => producto.id === insuficiente.id).cantidad_stock ?? 0)
+      mostrarEstado(
+        `Stock insuficiente para ${insuficiente.nombre}: disponible ${disponible}, solicitado ${insuficiente.cantidad}.`,
+        true,
+      )
+      botonConfirmar.disabled = false
+      return
+    }
+
     mostrarEstado('Guardando venta…')
     const venta = await llamada(() => api.crearVenta({ ...cabecera, total }), mostrarErrorDeApi)
     if (!venta) {

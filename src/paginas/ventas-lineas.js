@@ -1,4 +1,4 @@
-// Líneas de producto de una venta: agregar por SKU, cambiar cantidades, quitar y calcular totales.
+// Líneas de producto de una venta: agregar por nombre o SKU, cambiar cantidades, quitar y calcular totales.
 import { api, llamada } from '../nucleo/comun.js'
 import { colones, nodo } from '../componentes/vista.js'
 
@@ -19,11 +19,17 @@ async function buscarProductoPorSku(sku) {
 export function crearLineasVenta() {
   const $ = (selector) => document.querySelector(selector)
   const cuerpoTabla = $('#lineas-cuerpo')
-  const campoSku = $('#linea-sku')
+  const campoProducto = $('#linea-producto')
+  const listaSugerencias = $('#linea-sugerencias')
   const campoCantidad = $('#linea-cantidad')
   const mensaje = $('#lineas-estado')
 
   let lineas = []
+  let sugerencias = []
+  let productoPendiente = null
+  let indiceActivo = -1
+  let controlador = null
+  let temporizador = null
 
   // ----- Mensajes -----
 
@@ -66,6 +72,7 @@ export function crearLineasVenta() {
         nodo('input', {
           type: 'number',
           min: 1,
+          max: linea.cantidad_stock,
           step: 1,
           value: linea.cantidad,
           'aria-label': `Cantidad de ${linea.nombre}`,
@@ -85,33 +92,153 @@ export function crearLineasVenta() {
     pintarTotales()
   }
 
+  // ----- Sugerencias (combobox) -----
+
+  function cerrarSugerencias() {
+    sugerencias = []
+    indiceActivo = -1
+    listaSugerencias.replaceChildren()
+    listaSugerencias.hidden = true
+    campoProducto.setAttribute('aria-expanded', 'false')
+    campoProducto.removeAttribute('aria-activedescendant')
+  }
+
+  function pintarSugerencias(productos) {
+    sugerencias = productos
+    indiceActivo = -1
+    listaSugerencias.replaceChildren(
+      ...productos.map((producto, indice) =>
+        nodo(
+          'li',
+          {
+            role: 'option',
+            id: `sugerencia-${producto.id}`,
+            clase: 'sugerencia',
+            'data-indice': indice,
+            'aria-selected': 'false',
+          },
+          [
+            nodo('span', { clase: 'sugerencia-nombre', texto: producto.nombre }),
+            nodo('span', {
+              clase: 'sugerencia-meta',
+              texto: `SKU ${producto.sku} · ${colones(producto.precio)} · Stock ${producto.cantidad_stock ?? 0}`,
+            }),
+          ],
+        ),
+      ),
+    )
+    listaSugerencias.hidden = productos.length === 0
+    campoProducto.setAttribute('aria-expanded', String(productos.length > 0))
+  }
+
+  function activarSugerencia(indice) {
+    if (!sugerencias.length) return
+    indiceActivo = (indice + sugerencias.length) % sugerencias.length
+    ;[...listaSugerencias.children].forEach((opcion, i) => {
+      const activa = i === indiceActivo
+      opcion.setAttribute('aria-selected', String(activa))
+      opcion.classList.toggle('activa', activa)
+    })
+    campoProducto.setAttribute('aria-activedescendant', `sugerencia-${sugerencias[indiceActivo].id}`)
+  }
+
+  // Busca mientras se escribe, con una pausa corta y cancelando la petición anterior.
+  function programarBusqueda() {
+    clearTimeout(temporizador)
+    controlador?.abort()
+
+    const texto = campoProducto.value.trim()
+    if (texto.length < 2) {
+      cerrarSugerencias()
+      return
+    }
+
+    temporizador = setTimeout(async () => {
+      controlador = new AbortController()
+      const respuesta = await llamada(
+        () => api.listarProductos({ q: texto, perPage: 8 }, controlador.signal),
+        () => cerrarSugerencias(),
+      )
+      // Si el texto cambió mientras llegaba la respuesta, se descarta.
+      if (!respuesta || campoProducto.value.trim() !== texto) return
+      pintarSugerencias(respuesta.data)
+    }, 250)
+  }
+
   // ----- Acciones -----
 
-  // Agrega un producto por SKU. Si ya está en la venta, suma la cantidad.
-  async function agregar() {
-    const sku = campoSku.value.trim()
+  // Producto que corresponde a lo escrito: primero la sugerencia activa,
+  // luego el SKU exacto (lector de códigos) y por último la primera sugerencia.
+  function productoElegido() {
+    if (indiceActivo >= 0) return sugerencias[indiceActivo]
+    const texto = campoProducto.value.trim().toUpperCase()
+    const exacto = sugerencias.find((producto) => String(producto.sku).toUpperCase() === texto)
+    return exacto ?? sugerencias[0] ?? null
+  }
+
+  function seleccionarProducto(producto) {
+    clearTimeout(temporizador)
+    controlador?.abort()
+    productoPendiente = producto
+    campoProducto.value = producto.nombre
+    cerrarSugerencias()
+    mostrarMensaje(`Seleccionado: ${producto.nombre}. Ingrese la cantidad y presione Agregar producto.`)
+    campoCantidad.focus()
+  }
+
+  // Agrega un producto. Si ya está en la venta, suma la cantidad.
+  async function agregar(producto = null) {
     const cantidad = Number(campoCantidad.value)
-    if (!sku) return mostrarMensaje('Escriba el SKU del producto.', true)
     if (!Number.isInteger(cantidad) || cantidad < 1) {
       return mostrarMensaje('La cantidad debe ser un número entero mayor que cero.', true)
     }
 
-    mostrarMensaje('Buscando producto…')
-    const producto = await buscarProductoPorSku(sku)
-    if (!producto) return mostrarMensaje(`No se encontró un producto con SKU “${sku}”.`, true)
+    let elegido = producto ?? productoPendiente ?? productoElegido()
 
-    const existente = lineas.find((linea) => linea.id === producto.id)
-    if (existente) {
-      existente.cantidad += cantidad
-    } else {
-      lineas.push({ id: producto.id, sku: producto.sku, nombre: producto.nombre, precio: producto.precio, cantidad })
+    if (!elegido) {
+      const texto = campoProducto.value.trim()
+      if (!texto) return mostrarMensaje('Escriba el nombre o el SKU del producto.', true)
+      mostrarMensaje('Buscando producto…')
+      elegido = await buscarProductoPorSku(texto)
+      if (!elegido) {
+        return mostrarMensaje(`No se encontró un producto para “${texto}”. Seleccione una sugerencia.`, true)
+      }
     }
 
-    campoSku.value = ''
+    clearTimeout(temporizador)
+    controlador?.abort()
+
+    const existente = lineas.find((linea) => linea.id === elegido.id)
+    const stockDisponible = Number(elegido.cantidad_stock ?? 0)
+    const cantidadSolicitada = (existente?.cantidad ?? 0) + cantidad
+    if (cantidadSolicitada > stockDisponible) {
+      return mostrarMensaje(
+        `Stock insuficiente para ${elegido.nombre}: disponible ${stockDisponible}, solicitado ${cantidadSolicitada}.`,
+        true,
+      )
+    }
+
+    if (existente) {
+      existente.cantidad = cantidadSolicitada
+      existente.cantidad_stock = stockDisponible
+    } else {
+      lineas.push({
+        id: elegido.id,
+        sku: elegido.sku,
+        nombre: elegido.nombre,
+        precio: elegido.precio,
+        cantidad,
+        cantidad_stock: stockDisponible,
+      })
+    }
+
+    campoProducto.value = ''
     campoCantidad.value = '1'
-    mostrarMensaje(`Agregado: ${cantidad} × ${producto.nombre}.`)
+    productoPendiente = null
+    cerrarSugerencias()
+    mostrarMensaje(`Agregado: ${cantidad} × ${elegido.nombre}.`)
     pintarTabla()
-    campoSku.focus()
+    campoProducto.focus()
   }
 
   function quitar(indice) {
@@ -127,6 +254,14 @@ export function crearLineasVenta() {
       pintarTabla()
       return
     }
+    if (cantidad > lineas[indice].cantidad_stock) {
+      mostrarMensaje(
+        `Stock insuficiente para ${lineas[indice].nombre}: disponible ${lineas[indice].cantidad_stock}, solicitado ${cantidad}.`,
+        true,
+      )
+      pintarTabla()
+      return
+    }
     lineas[indice].cantidad = cantidad
     mostrarMensaje('')
     pintarTabla()
@@ -134,13 +269,43 @@ export function crearLineasVenta() {
 
   // ----- Eventos -----
 
-  $('#btn-agregar-linea').addEventListener('click', agregar)
+  $('#btn-agregar-linea').addEventListener('click', () => agregar())
 
-  campoSku.addEventListener('keydown', (evento) => {
-    if (evento.key === 'Enter') {
+  campoProducto.addEventListener('input', () => {
+    productoPendiente = null
+    programarBusqueda()
+  })
+
+  campoProducto.addEventListener('keydown', (evento) => {
+    if (evento.key === 'ArrowDown') {
       evento.preventDefault()
-      agregar()
+      activarSugerencia(indiceActivo + 1)
+    } else if (evento.key === 'ArrowUp') {
+      evento.preventDefault()
+      activarSugerencia(indiceActivo <= 0 ? sugerencias.length - 1 : indiceActivo - 1)
+    } else if (evento.key === 'Enter') {
+      evento.preventDefault()
+      if (sugerencias.length) {
+        const elegido = productoElegido()
+        if (elegido) seleccionarProducto(elegido)
+      } else {
+        agregar()
+      }
+    } else if (evento.key === 'Escape') {
+      cerrarSugerencias()
     }
+  })
+
+  // pointerdown evita que el campo pierda el foco antes de elegir la sugerencia.
+  listaSugerencias.addEventListener('pointerdown', (evento) => {
+    const opcion = evento.target.closest('[data-indice]')
+    if (!opcion) return
+    evento.preventDefault()
+    seleccionarProducto(sugerencias[Number(opcion.dataset.indice)])
+  })
+
+  campoProducto.addEventListener('focusout', () => {
+    setTimeout(cerrarSugerencias, 150)
   })
 
   cuerpoTabla.addEventListener('click', (evento) => {
@@ -163,9 +328,18 @@ export function crearLineasVenta() {
     obtener: () => [...lineas],
     totales,
     pintarTotales,
+    actualizarStock(productos) {
+      productos.forEach((producto) => {
+        const linea = lineas.find((actual) => actual.id === producto.id)
+        if (linea) linea.cantidad_stock = Number(producto.cantidad_stock ?? 0)
+      })
+      pintarTabla()
+    },
     // Vacía la lista (después de guardar o cancelar).
     vaciar() {
       lineas = []
+      productoPendiente = null
+      cerrarSugerencias()
       mostrarMensaje('')
       pintarTabla()
     },
