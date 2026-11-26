@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recepción — Ferretería Pescado Volador</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+  <script>(function(){try{var t=localStorage.getItem("ferreteria:tema");if(t!=="oscuro"&&t!=="claro"){t=matchMedia("(prefers-color-scheme: dark)").matches?"oscuro":"claro"}document.documentElement.dataset.tema=t}catch(e){document.documentElement.dataset.tema="claro"}})()</script>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body data-vista="recepcion">
+  <a class="skip" href="#contenido">Saltar al contenido</a>
+  <header class="sitio">
+    <div class="header-inner">
+      <a class="marca" href="index.html">Pescado Volador</a>
+      <nav class="nav" aria-label="Principal">
+        <a href="index.html" data-permiso="view products">Productos</a>
+        <a href="ventas.html" data-permiso="view sales">Ventas</a>
+        <a href="recepcion.html" aria-current="page" data-permiso="receive purchases">Recepción</a>
+        <a href="compras.html" data-permiso="view purchases">Compras</a>
+        <a href="proveedores.html" data-permiso="view suppliers">Proveedores</a>
+        <a href="clientes.html" data-permiso="view customers">Clientes</a>
+        <a href="movimientos.html" data-permiso="view inventory-movements">Movimientos</a>
+        <a href="catalogos.html" data-permiso="view categories">Catálogos</a>
+      </nav>
+      <div class="acciones">
+        <button id="btn-tema" type="button" aria-pressed="false" aria-label="Modo oscuro">☾</button>
+        <button id="btn-salir" type="button">Cerrar sesión</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <main id="contenido" class="layout layout-dos">
+      <h1>Recepción de compras</h1>
+      <noscript><p class="error">Esta pantalla necesita JavaScript para consumir la API.</p></noscript>
+
+      <section aria-labelledby="t-buscar" data-permiso="receive purchases">
+        <h2 id="t-buscar">1. Buscar producto</h2>
+        <form id="buscar-form" role="search">
+          <label for="codigo">Código de barras</label>
+          <input id="codigo" name="codigo" type="text" autocomplete="off" aria-describedby="ayuda-codigo">
+          <p class="ayuda" id="ayuda-codigo">Escanee el código o escríbalo y presione Enter. Se muestran los detalles pendientes de recibir.</p>
+          <p class="acciones">
+            <button class="btn-primario" type="submit">Buscar pendientes</button>
+          </p>
+        </form>
+        <div id="buscar-estado" role="status" aria-live="polite"></div>
+        <div id="pendientes" class="grid-productos"></div>
+      </section>
+
+      <section aria-labelledby="t-confirmar" id="confirmar" data-permiso="receive purchases" tabindex="-1" hidden>
+        <h2 id="t-confirmar">2. Confirmar recepción</h2>
+        <div id="confirmar-detalle"></div>
+        <form id="recibir-form" novalidate>
+          <fieldset>
+            <legend>Datos de la recepción</legend>
+
+            <label for="recibir-codigo">Código de barras</label>
+            <input id="recibir-codigo" name="barcode" type="text" autocomplete="off" required aria-describedby="err-barcode">
+            <p class="ayuda" data-error="barcode" id="err-barcode" aria-live="polite"></p>
+
+            <label for="recibir-cantidad">Cantidad recibida</label>
+            <input id="recibir-cantidad" name="quantity" type="number" min="1" step="1" required aria-describedby="ayuda-cantidad err-quantity">
+            <p class="ayuda" id="ayuda-cantidad">Debe coincidir exactamente con la cantidad del detalle.</p>
+            <p class="ayuda" data-error="quantity" id="err-quantity" aria-live="polite"></p>
+          </fieldset>
+
+          <p class="acciones">
+            <button class="btn-primario" type="submit">Confirmar recepción</button>
+            <button type="button" id="btn-cancelar-recepcion">Cancelar</button>
+          </p>
+          <p id="estado-recepcion" class="ayuda" role="status" aria-live="polite"></p>
+        </form>
+      </section>
+    </main>
+    <footer>
+      <address class="contacto">
+        <p>Correo electrónico: info@ferreteriapescadofeliz.com</p>
+        <p>Teléfono: (506) 2665-1308</p>
+      </address>
+    </footer>
+  </div>
+
+  <script type="module" src="/src/paginas/recepcion.js"></script>
+</body>
+</html>

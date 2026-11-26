@@ -1,482 +1,735 @@
+/*
+  Identidad visual: Pescado Volador.
+  Tokens en :root; los componentes solo usan estas variables.
+  Guía completa en docs/identidad-visual.md.
+*/
 
-
-
-/* 1. Variables reutilizables: colores, tipografía, radios y medidas comunes. */
+/* 1. Tokens */
 :root {
-  --niebla: #E9E6E7;       
-  --pizarra: #5E5653;      
-  --pizarra-hover: #4A4442;
-  --acero: #7B7F8A;        
-  --arena: #AB978C;      
-  --bruma: #6B7C98;       
-  --bruma-texto: #4A5A73;  
-  --sec-texto: #4E525B;    
-  --ink: #1A1A1A;         
-  --blanco: #fff;
-  --danger: #9b7070;
-  --danger-bg: #FEE2E2;
-  --success: #166534;
-  --success-bg: #DCFCE7;
+  /* Color: primario (petróleo), acento (naranja), tinta y superficies */
+  --c-primario: #0B5563;
+  --c-primario-oscuro: #083F4A;
+  --c-primario-suave: #E2F0F2;
+  --c-primario-texto: #0B5563;
+  --c-acento: #F29E4C;
+  --c-acento-oscuro: #D9822B;
+  --c-tinta: #0F1B22;
+  --c-tinta-suave: #3E4C57;
+  --c-borde: #7A8794;
+  --c-borde-suave: #D7DEE4;
+  --c-fondo: #F4F7F8;
+  --c-superficie: #FFFFFF;
+  --c-superficie-alt: #EEF3F5;
 
-  --font: "Clarity City", ui-sans-serif, system-ui, sans-serif;
-  --radio: 0.5rem;
-  --radio-sm: 0.375rem;
-  --max: 64rem;            
-  --tap: 2.75rem;         
+  /* Color de estado */
+  --c-exito: #17663D;
+  --c-exito-suave: #DDF3E6;
+  --c-error: #B42318;
+  --c-error-suave: #FDECEA;
+  --c-aviso: #8A5A00;
+  --c-aviso-suave: #FFF3D6;
+
+  /* Tipografía */
+  --fuente-titulos: "Manrope", ui-sans-serif, system-ui, sans-serif;
+  --fuente-texto: "Inter", ui-sans-serif, system-ui, sans-serif;
+
+  /* Espaciado (escala de 4 px) */
+  --espacio-1: 0.25rem;
+  --espacio-2: 0.5rem;
+  --espacio-3: 0.75rem;
+  --espacio-4: 1rem;
+  --espacio-5: 1.5rem;
+  --espacio-6: 2rem;
+
+  /* Radios y sombras */
+  --radio-sm: 0.5rem;
+  --radio: 0.75rem;
+  --radio-lg: 1rem;
+  --sombra-sm: 0 1px 2px rgba(15, 27, 34, 0.06);
+  --sombra-md: 0 6px 18px rgba(15, 27, 34, 0.12);
+
+  /* Medidas: el contenido ocupa todo el ancho disponible */
+  --alto-control: 2.75rem;
+  --alto-header-boton: 2.6rem;
+  --foco: 3px solid var(--c-acento);
 }
 
-/* 2. Base móvil primero: todo lo de aquí es la vista móvil. */
+/* Modo oscuro: mismos nombres de token, valores distintos. */
+:root[data-tema="oscuro"] {
+  color-scheme: dark;
+  --c-primario: #1F7A8A;
+  --c-primario-oscuro: #17616E;
+  --c-primario-suave: #15313A;
+  --c-primario-texto: #7FD3E0;
+  --c-acento: #F5A962;
+  --c-acento-oscuro: #F29E4C;
+  --c-tinta: #E8EEF2;
+  --c-tinta-suave: #B3C0CA;
+  --c-borde: #8D9BA7;
+  --c-borde-suave: #2C3B45;
+  --c-fondo: #0E1519;
+  --c-superficie: #17222A;
+  --c-superficie-alt: #1F2D37;
+  --c-exito: #6FD39A;
+  --c-exito-suave: #173A29;
+  --c-error: #FF8A80;
+  --c-error-suave: #3D1E1B;
+  --c-aviso: #FFC861;
+  --c-aviso-suave: #3A2F12;
+}
+
+/* 2. Base */
 *, *::before, *::after { box-sizing: border-box; }
 
-html { font-size: 100%; } 
+[hidden] { display: none !important; }
+
+html { -webkit-text-size-adjust: 100%; }
 
 body {
   margin: 0;
-  font-family: var(--font);
-  font-size: 1rem;
-  line-height: 1.5;
-  color: var(--ink);
-  background: var(--niebla);
-}
-
-
-.container {
-  --pad: 1rem;
-  min-width: min(20rem, 100%); 
-  max-width: var(--max);
-  margin-inline: auto;
-  padding-inline: var(--pad);
-  background: var(--blanco);
-  min-height: 12.5rem;
-  border-top: 0.25rem solid var(--danger); 
-
-  /* 36rem (576px): aumenta el espacio lateral en pantallas medianas. */
-  @media (width >= 36rem) {
-    --pad: 1.25rem;
-  }
-  /* 48rem (768px): amplía el espacio y cambia el borde de estado. */
-  @media (width >= 48rem) {
-    --pad: 1.5rem;
-    border-top-color: var(--success); 
-  }
-  /* 64rem (1024px): usa más espacio lateral en escritorio. */
-  @media (width >= 64rem) {
-    --pad: 2rem;
-  }
-}
-
-
-.layout {
-  --layout-cols: 1fr;
-  display: grid;
-  gap: 1.5rem;
-  grid-template-columns: var(--layout-cols);
-
-  > * { min-width: 0; }
-  > h1 { grid-column: 1 / -1; } 
-}
-
-.layout-dos {
-  @media (width >= 48rem) {
-    --layout-cols: 2fr 1fr;
-  }
-}
-
-.layout-filtros { 
-  @media (width >= 64rem) {
-    --layout-cols: 16rem 1fr;
-  }
-}
-
-.resumen {
-  @media (width >= 48rem) {
-    position: sticky;
-    top: 1rem;
-    align-self: start;
-    border: 1px solid var(--acero);
-    border-radius: var(--radio);
-    padding: 1rem;
-  }
-}
-
-
-.grid-productos {
-  --prod-cols: 2;
-  display: grid;
-  gap: 1rem;
-  grid-template-columns: repeat(var(--prod-cols), 1fr);
-
-  @media (width >= 36rem) { --prod-cols: 3; }
-  /* 64rem (1024px): muestra cuatro productos por fila. */
-  @media (width >= 64rem) { --prod-cols: 4; }
-}
-
-#historial.grid-productos {
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 8rem), 1fr));
-}
-            
-
-.header-inner, .nav, .fila, .acciones, .badges {
+  min-height: 100dvh;
   display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  flex-wrap: wrap;
+  flex-direction: column;
+  font-family: var(--fuente-texto);
+  font-size: 1rem;
+  line-height: 1.55;
+  color: var(--c-tinta);
+  background: var(--c-fondo);
 }
 
+img, svg, video { max-width: 100%; height: auto; }
 
-header.sitio {
-  background: var(--pizarra);
-  color: var(--blanco);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-
-  .container.header-inner {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    max-width: var(--max);
-    margin-inline: auto;
-    padding-inline: var(--pad);
-    background: transparent;
-    min-height: 0;
-    border-top: none;
-    padding-block: 0.75rem;
-
-    @media (orientation: landscape) and (height <= 30rem) {
-      padding-block: 0.25rem;
-    }
-  }
-
-  .nav {
-    display: flex;
-    gap: 1.5rem;
-    align-items: center;
-
-    a {
-      color: var(--blanco);
-      text-decoration: underline;
-      text-underline-offset: 0.2em;
-      font-weight: 500;
-      font-size: 0.95rem;
-      min-height: var(--tap);
-      display: inline-flex;
-      align-items: center;
-      padding: 0.35rem 0.75rem;
-      border-radius: 4px;
-      transition: background-color 0.2s ease, opacity 0.2s ease;
-
-      &:hover {
-        background: rgba(255, 255, 255, 0.1);
-      }
-
-      &[aria-current="page"] {
-        background: transparent;
-        font-weight: 600;
-      }
-    }
-  }
+h1, h2, h3 {
+  font-family: var(--fuente-titulos);
+  color: var(--c-tinta);
+  line-height: 1.25;
 }
+h1 { font-size: 1.75rem; margin: var(--espacio-4) 0 var(--espacio-1); }
+h2 { font-size: 1.3rem; margin: var(--espacio-3) 0 var(--espacio-2); }
+h3 { font-size: 1.05rem; margin: var(--espacio-2) 0 var(--espacio-1); overflow-wrap: anywhere; }
 
-nav a[aria-current="page"] {
-  text-decoration: underline;
-  font-weight: 700;
-}
+p, li { max-width: 75ch; margin: 0 0 var(--espacio-2); }
 
-
-h1 { font-size: 2rem;    line-height: 2.5rem;  margin: 1.5rem 0 1rem; }
-h2 { font-size: 1.5rem;  line-height: 2rem;    margin: 1rem 0 0.5rem; }
-h3 { font-size: 1.25rem; line-height: 1.75rem; margin: 0.75rem 0 0.25rem; }
-
-p, li { max-width: 75ch; }
-
-.price {
-  font-variant-numeric: tabular-nums;
-  font-weight: 700;
-  font-size: 1.25rem;
-}
-
+a { color: var(--c-primario-texto); }
 
 code { overflow-wrap: anywhere; }
 
+/* 3. Contenedor y disposición: ancho completo de la ventana */
+.container {
+  --pad: 1rem;
+  width: 100%;
+  margin-inline: 0;
+  padding-inline: var(--pad);
+  background: var(--c-superficie);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 
+  @media (width >= 36rem) { --pad: 1.25rem; }
+  @media (width >= 64rem) { --pad: 1.75rem; }
+  @media (width >= 100rem) { --pad: 2.5rem; }
+}
+
+body > .container > main { flex: 1; padding-block: var(--espacio-3) var(--espacio-6); }
+
+.layout {
+  display: grid;
+  gap: var(--espacio-4);
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/* Títulos de página y avisos ocupan todo el ancho, sin importar la columna. */
+.layout > :not(section) { grid-column: 1 / -1; }
+.layout > section { min-width: 0; }
+.ancho-completo { grid-column: 1 / -1; }
+
+.layout-dos {
+  @media (width >= 64rem) {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+    align-items: start;
+    gap: var(--espacio-5);
+  }
+}
+
+/* 4. Encabezado compacto: marca, opciones y acciones en una fila (escritorio) o dos (móvil) */
+header.sitio {
+  background: var(--c-primario);
+  color: #FFFFFF;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: var(--sombra-sm);
+}
+
+header.sitio .header-inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espacio-2) var(--espacio-4);
+  width: 100%;
+  padding: var(--espacio-3) var(--pad);
+  background: transparent;
+  box-shadow: none;
+  flex: none;
+}
+
+/* El encabezado no es .container: define su propio margen lateral. */
+header.sitio .header-inner { --pad: 1rem; }
+@media (width >= 36rem) { header.sitio .header-inner { --pad: 1.25rem; } }
+@media (width >= 64rem) { header.sitio .header-inner { --pad: 1.75rem; } }
+@media (width >= 100rem) { header.sitio .header-inner { --pad: 2.5rem; } }
+
+header.sitio .marca {
+  font-family: var(--fuente-titulos);
+  font-weight: 800;
+  font-size: 1.2rem;
+  color: #FFFFFF;
+  text-decoration: none;
+  white-space: nowrap;
+  letter-spacing: 0.01em;
+}
+
+header.sitio .nav {
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+  flex-wrap: nowrap;
+  gap: 2px;
+  align-items: center;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.5) transparent;
+}
+
+/* Marca y acciones en la primera fila; el menú baja a su propia fila y se desplaza si no cabe. */
+header.sitio .nav { flex: 1 1 100%; order: 3; }
+
+header.sitio .nav a {
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+  white-space: nowrap;
+  min-height: var(--alto-header-boton);
+  padding: var(--espacio-1) var(--espacio-4);
+  border-radius: 999px;
+  color: #FFFFFF;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.98rem;
+  transition: background-color 0.15s ease;
+}
+
+header.sitio .nav a:hover { background: rgba(255, 255, 255, 0.14); }
+
+/* Página activa: subrayado naranja, sin forma de botón. */
+header.sitio .nav a[aria-current="page"] {
+  font-weight: 700;
+  background: transparent;
+  border-radius: 0;
+  box-shadow: inset 0 -3px 0 var(--c-acento);
+}
+
+header.sitio .acciones {
+  margin: 0 0 0 auto;
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-2);
+}
+
+header.sitio .acciones button {
+  min-height: var(--alto-header-boton);
+  min-width: 0;
+  padding: var(--espacio-1) var(--espacio-4);
+  border-radius: 999px;
+  font-size: 0.92rem;
+  font-weight: 600;
+  background: transparent;
+  color: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  white-space: nowrap;
+}
+
+header.sitio .acciones button:hover:not(:disabled) { background: rgba(255, 255, 255, 0.14); }
+
+/* Botón de modo oscuro: destacado y con icono. */
+/* Modo oscuro: contorno. Cerrar sesión: sólido naranja (la acción principal).
+   Simular expiración: enlace discreto, sin borde. */
+header.sitio #btn-tema {
+  border-color: rgba(255, 255, 255, 0.7);
+  width: var(--alto-header-boton);
+  min-width: var(--alto-header-boton);
+  padding: 0;
+  font-size: 1.1rem;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+header.sitio #btn-salir {
+  background: var(--c-acento);
+  border-color: var(--c-acento);
+  color: #0F1B22;
+}
+header.sitio #btn-salir:hover:not(:disabled) { background: var(--c-acento-oscuro); }
+
+
+/* Texto solo para lectores de pantalla. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip {
+  position: absolute;
+  left: -100vw;
+}
+.skip:focus {
+  left: var(--espacio-4);
+  top: var(--espacio-4);
+  background: var(--c-superficie);
+  color: var(--c-tinta);
+  padding: var(--espacio-2) var(--espacio-4);
+  z-index: 200;
+  border-radius: var(--radio-sm);
+}
+
+/* 5. Botones */
+button, .btn {
+  min-height: var(--alto-control);
+  min-width: var(--alto-control);
+  padding: var(--espacio-2) var(--espacio-4);
+  border-radius: var(--radio-sm);
+  border: 1px solid var(--c-borde);
+  background: var(--c-superficie);
+  color: var(--c-tinta);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+button:hover:not(:disabled) { background: var(--c-superficie-alt); }
+button:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.btn-primario {
+  background: var(--c-primario);
+  border-color: var(--c-primario);
+  color: #FFFFFF;
+}
+.btn-primario:hover:not(:disabled) {
+  background: var(--c-primario-oscuro);
+  border-color: var(--c-primario-oscuro);
+}
+
+.btn-peligro {
+  color: var(--c-error);
+  border-color: var(--c-error);
+  background: var(--c-superficie);
+}
+.btn-peligro:hover:not(:disabled) { background: var(--c-error-suave); }
+
+.btn-quitar {
+  min-height: 2.25rem;
+  min-width: 0;
+  padding: var(--espacio-1) var(--espacio-3);
+  color: var(--c-error);
+  border-color: var(--c-error);
+}
+
+:focus-visible {
+  outline: var(--foco);
+  outline-offset: 2px;
+}
+
+@media (any-pointer: coarse) {
+  button, .btn { min-height: 3rem; }
+}
+
+/* 6. Formularios */
+form {
+  display: grid;
+  gap: var(--espacio-3);
+}
+
+form fieldset {
+  border: 1px solid var(--c-borde-suave);
+  border-radius: var(--radio);
+  padding: var(--espacio-4);
+  display: grid;
+  gap: var(--espacio-2);
+  margin: 0;
+  min-width: 0;
+}
+
+form legend {
+  padding-inline: var(--espacio-2);
+  font-family: var(--fuente-titulos);
+  font-weight: 700;
+  color: var(--c-primario-texto);
+}
+
+label {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--c-tinta);
+}
+
+input, select, textarea {
+  width: 100%;
+  min-height: var(--alto-control);
+  font: inherit;
+  padding: var(--espacio-2) var(--espacio-3);
+  border: 1px solid var(--c-borde);
+  border-radius: var(--radio-sm);
+  background: var(--c-superficie);
+  color: var(--c-tinta);
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: var(--foco);
+  outline-offset: 0;
+  border-color: var(--c-primario-texto);
+}
+
+input[aria-invalid="true"], select[aria-invalid="true"], textarea[aria-invalid="true"] {
+  border: 2px solid var(--c-error);
+}
+
+input[type="checkbox"] {
+  width: 1.25rem;
+  min-height: 1.25rem;
+  accent-color: var(--c-primario-texto);
+}
+
+textarea { min-height: 6rem; resize: vertical; }
+
+/* 7. Texto de apoyo, avisos y estados */
+.ayuda {
+  font-size: 0.875rem;
+  color: var(--c-tinta-suave);
+  margin: var(--espacio-1) 0 0;
+}
+
+.error {
+  font-size: 0.9rem;
+  color: var(--c-error);
+  background: var(--c-error-suave);
+  padding: var(--espacio-2) var(--espacio-3);
+  border-radius: var(--radio-sm);
+  border-left: 4px solid var(--c-error);
+}
+
+.price {
+  font-family: var(--fuente-titulos);
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: var(--c-primario-texto);
+}
+
+/* 8. Insignias de estado */
+.badges, .acciones, .fila {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espacio-2);
+}
+
+.badge {
+  display: inline-block;
+  border-radius: 999px;
+  padding: var(--espacio-1) var(--espacio-3);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+.badge-ok { background: var(--c-exito-suave); color: var(--c-exito); }
+.badge-bajo { background: var(--c-aviso-suave); color: var(--c-aviso); }
+.badge-error { background: var(--c-error-suave); color: var(--c-error); }
+.badge-neutro { background: var(--c-superficie-alt); color: var(--c-tinta-suave); }
+
+/* 9. Barras de herramientas y cuadrículas */
+.barra-herramientas {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--espacio-3);
+  padding: var(--espacio-3);
+  background: var(--c-superficie-alt);
+  border: 1px solid var(--c-borde-suave);
+  border-radius: var(--radio);
+}
+
+.barra-herramientas form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--espacio-2);
+  flex: 1 1 22rem;
+  min-width: 0;
+}
+
+.barra-herramientas form > div {
+  display: grid;
+  gap: var(--espacio-1);
+  flex: 1 1 12rem;
+  min-width: 0;
+}
+
+.barra-herramientas input { min-width: 0; }
+
+.grid-productos,
+.grid-ventas {
+  display: grid;
+  gap: var(--espacio-3);
+  grid-template-columns: repeat(auto-fill, minmax(min(14rem, 100%), 1fr));
+  min-width: 0;
+}
+
+.grid-productos > *,
+.grid-ventas > * { min-width: 0; }
+
+.card {
+  background: var(--c-superficie);
+  border: 1px solid var(--c-borde-suave);
+  border-radius: var(--radio);
+  box-shadow: var(--sombra-sm);
+  padding: var(--espacio-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-2);
+  min-width: 0;
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.card:hover { box-shadow: var(--sombra-md); }
+
+.card h3 { margin: 0; }
+.card p { margin: 0; overflow-wrap: anywhere; }
+
+.card-pie {
+  margin-top: auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espacio-2);
+  align-items: center;
+}
+
+.card-pie .ayuda { margin: 0; }
+
+/* 10. Detalle de producto y código de barras */
+.detalle-producto {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--espacio-1) var(--espacio-4);
+  margin: 0;
+}
+
+@media (width >= 36rem) {
+  .detalle-producto { grid-template-columns: max-content minmax(0, 1fr); }
+}
+
+.detalle-producto dt { font-weight: 600; color: var(--c-tinta-suave); }
+.detalle-producto dd { margin: 0 0 var(--espacio-2); overflow-wrap: anywhere; }
+
+.codigo-barras {
+  max-width: 100%;
+  height: auto;
+  padding: var(--espacio-2);
+  background: #FFFFFF;
+  border: 1px solid var(--c-borde-suave);
+  border-radius: var(--radio-sm);
+}
+
+/* Etiqueta imprimible del catálogo de productos. */
+.etiqueta-impresion {
+  margin-top: var(--espacio-2);
+  padding-top: var(--espacio-2);
+  border-top: 1px dashed var(--c-borde-suave);
+  text-align: center;
+}
+
+.barcode-numero {
+  font-family: monospace;
+  font-size: 0.9rem;
+  letter-spacing: 0.1em;
+  margin: var(--espacio-1) 0 0;
+}
+
+/* 11. Tablas */
 .tabla-scroll { overflow-x: auto; }
 
 table {
   width: 100%;
   border-collapse: collapse;
-  background: var(--blanco);
-  font-size: 0.875rem;
-
-  caption {
-    text-align: left;
-    font-weight: 600;
-    padding-bottom: 0.5rem;
-    color: var(--pizarra);
-  }
-  th, td {
-    text-align: left;
-    padding: 0.5rem 0.75rem;
-    border-bottom: 1px solid var(--niebla);
-  }
-  thead th {
-    background: var(--niebla);
-    color: var(--ink);
-  }
-  tbody th[scope="row"] { font-weight: 700; }
+  background: var(--c-superficie);
+  font-size: 0.9rem;
 }
 
-
-.card {
-  border: 1px solid var(--acero);
-  border-radius: var(--radio);
-  padding: 1rem;
-  background: var(--blanco);
-  display: flex; 
-  flex-direction: column;
-  gap: 0.5rem;
-
-  
-  .card-pie {
-    margin-top: auto;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.5rem;
-  }
-
-  .price { display: block; } 
+caption {
+  text-align: left;
+  font-family: var(--fuente-titulos);
+  font-weight: 700;
+  padding-bottom: var(--espacio-2);
+  color: var(--c-primario-texto);
 }
 
-.producto-imagen {
-  width: 100%;
-  aspect-ratio: 4 / 3;
-  object-fit: contain;
-  border-radius: var(--radio-sm);
+th, td {
+  text-align: left;
+  padding: var(--espacio-2) var(--espacio-3);
+  border-bottom: 1px solid var(--c-borde-suave);
+  vertical-align: top;
+  overflow-wrap: anywhere;
 }
 
-.badge {
-  border-radius: 999px;
-  padding: 0.25rem 0.75rem;
-  font-size: 0.75rem;
-  font-weight: 500;
-
-  &.badge-ok   { background: var(--success-bg); color: var(--success); }
-  &.badge-bajo { background: var(--arena);      color: var(--ink); }
+thead th {
+  background: var(--c-superficie-alt);
+  color: var(--c-tinta);
+  font-weight: 600;
 }
 
-button, .btn {
-  display: inline-flex;
+tbody th[scope="row"] { font-weight: 600; }
+
+tbody tr:hover { background: var(--c-primario-suave); }
+
+/* 12. Diálogos modales */
+dialog {
+  width: min(56rem, calc(100% - 2rem));
+  max-height: calc(100dvh - 2rem);
+  overflow: auto;
+  border: 1px solid var(--c-borde-suave);
+  border-radius: var(--radio-lg);
+  padding: var(--espacio-5);
+  background: var(--c-superficie);
+  color: var(--c-tinta);
+  box-shadow: var(--sombra-md);
+}
+
+dialog::backdrop { background: rgba(15, 27, 34, 0.55); }
+
+dialog .cabecera-dialogo {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--espacio-3);
+  margin-bottom: var(--espacio-3);
+}
+
+dialog .cabecera-dialogo h2 { margin: 0; }
+
+/* 13. Secciones y bloques desplegables */
+.seccion-cabecera {
+  display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  justify-content: center;
-  min-height: var(--tap);
-  min-width: var(--tap);
-  padding: 0.5rem 1rem;
+  justify-content: space-between;
+  gap: var(--espacio-3);
+}
+
+.seccion-cabecera h2 { margin: 0; }
+
+.panel-formulario { display: grid; gap: var(--espacio-3); }
+
+details {
+  border: 1px solid var(--c-borde-suave);
   border-radius: var(--radio-sm);
-  font: inherit;
+  padding: var(--espacio-2) var(--espacio-3);
+  background: var(--c-superficie);
+}
+
+details summary {
   cursor: pointer;
-  text-decoration: none;
-
-  
-  @media (any-pointer: coarse) {
-    min-height: 3rem;
-    padding-inline: 1.25rem;
-  }
-}
-
-.btn-primario {
-  background: var(--pizarra);
-  color: var(--blanco);
-  border: 1px solid var(--pizarra);
-
- 
-  @media (any-hover: hover) {
-    &:hover { background: var(--pizarra-hover); }
-  }
-}
-
-
-:focus-visible {
-  outline: 3px solid var(--bruma);
-  outline-offset: 2px;
-}
-
-
-form {
-  display: grid;
-  gap: 1rem;
-
-  fieldset {
-    border: 1px solid var(--acero);
-    border-radius: var(--radio);
-    padding: 1rem;
-
-    legend {
-      padding-inline: 0.5rem;
-      font-weight: 600;
-    }
-  }
-}
-
-label {
-  display: block;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--pizarra);
-}
-
-input, select, textarea {
-  width: 100%;
-  min-height: var(--tap);
-  font: inherit;
-  padding: 0.5rem;
-  border: 1px solid var(--acero);
-  border-radius: var(--radio-sm);
-  background: var(--blanco);
-
-  &[aria-invalid="true"] { border: 2px solid var(--danger); }
-
-
-  &:is([type="checkbox"], [type="radio"]) {
-    width: 1.5rem;
-    min-height: 1.5rem;
-    flex: none;
-  }
-}
-
-
-.opcion {
+  font-weight: 600;
+  color: var(--c-primario-texto);
+  min-height: var(--alto-control);
   display: flex;
   align-items: center;
-  gap: 0.5rem;
 }
 
-.ayuda {
-  font-size: 0.875rem;
-  color: var(--sec-texto);
-  margin: 0.25rem 0 0;
+details[open] summary { margin-bottom: var(--espacio-2); }
+
+/* 14. Ventas: líneas de producto y totales */
+.lineas-venta { width: 100%; }
+
+/* Cifras y botones no se parten en varias líneas; el nombre del producto sí puede hacerlo. */
+.lineas-venta th,
+.lineas-venta td { white-space: nowrap; }
+.lineas-venta td:first-child { white-space: normal; }
+
+.lineas-venta input[type="number"] { width: 6rem; min-height: 2.25rem; padding: var(--espacio-1) var(--espacio-2); }
+
+.resumen-venta {
+  display: grid;
+  gap: var(--espacio-1);
+  padding: var(--espacio-3);
+  border-radius: var(--radio);
+  background: var(--c-primario-suave);
+  border: 1px solid var(--c-borde-suave);
 }
 
-.error {
-  font-size: 0.875rem;
-  color: var(--danger);
-  background: var(--danger-bg);
-  padding: 0.5rem;
-  border-radius: var(--radio-sm);
+.resumen-venta div {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--espacio-3);
 }
 
-
-.skip {
-  position: absolute;
-  left: -100vw;
-
-  &:focus {
-    left: 1rem;
-    top: 1rem;
-    background: var(--blanco);
-    padding: 0.5rem 1rem;
-    z-index: 10;
-  }
+.resumen-venta .total {
+  font-family: var(--fuente-titulos);
+  font-weight: 800;
+  font-size: 1.2rem;
+  color: var(--c-primario-texto);
+  border-top: 1px solid var(--c-borde-suave);
+  padding-top: var(--espacio-2);
+  margin-top: var(--espacio-1);
 }
 
+/* 15. Paginación */
+.fila { justify-content: space-between; }
 
-.solo-js {
-  @media (scripting: none) {
-    display: none;
-  }
-}
-
-
-@media print {
-  body { background: var(--blanco); color: #000; }
-  header.sitio, .skip, button, .btn, .resumen { display: none; }
-  .container { max-width: none; border-top: none; }
-  .card { break-inside: avoid; }
-}
-
+/* 16. Pie de página */
 footer {
-  padding-block: 1rem;
-  border-top: 1px solid var(--acero);
-
-  .contacto {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    font-style: normal; 
-
-    @media (width >= 48rem) {
-      flex-direction: row;
-      gap: 2rem;
-    }
-
-    p { margin: 0; }
-    a { color: var(--bruma-texto); } 
-  }
-  
-}
-.etiqueta-impresion {
-  margin-top: 0.75rem;
-  padding-top: 0.75rem;
-  border-top: 1px dashed #ccc;
-  text-align: center;
+  border-top: 1px solid var(--c-borde-suave);
+  padding-block: var(--espacio-4);
+  color: var(--c-tinta-suave);
 }
 
-.barcode-svg svg {
-  max-width: 100%;
-  height: auto;
-}
-
-.barcode-numero {
-  font-family: monospace;
+footer .contacto {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-2);
+  font-style: normal;
   font-size: 0.9rem;
-  letter-spacing: 0.1em;
-  margin-top: 0.25rem;
 }
+
+@media (width >= 48rem) {
+  footer .contacto { flex-direction: row; gap: var(--espacio-6); }
+}
+
+footer .contacto p { margin: 0; }
+footer .contacto a { color: var(--c-primario-texto); }
+
+/* 17. Impresión */
+@page { margin: 0.5cm; }
 
 @media print {
- .etiqueta-impresion {
-  margin-top: 0.75rem;
-  padding-top: 0.75rem;
-  border-top: 1px dashed #ccc;
-  text-align: center;
-}
+  body { background: #FFFFFF; color: #000000; }
+  header.sitio, .skip, button, .btn, dialog, .barra-herramientas,
+  #lista-estado, #accion-estado, #paginacion, #resumen, .fila, footer { display: none; }
+  .container { box-shadow: none; }
+  .card { break-inside: avoid; }
 
-.barcode-svg svg {
-  max-width: 100%;
-  height: auto;
-}
-
-.barcode-numero {
-  font-family: monospace;
-  font-size: 0.9rem;
-  letter-spacing: 0.1em;
-  margin: 0.25rem 0 0;
-}
-
-@media print {
-  /* Quita márgenes de la hoja para aprovechar el papel */
-  @page {
-    margin: 0.5cm;
-  }
-
-  /* Oculta cabecera, título h1, filtros, paginación y pie de página */
-  header.sitio,
-  main > h1,
-  section[aria-labelledby="t-filtros"],
-  section[aria-labelledby="t-prod"] > h2,
-  #lista-estado,
-  #paginacion,
-  footer {
-    display: none !important;
-  }
-
-  /* Oculta todas las demás tarjetas de productos */
-  #productos .card:not(.imprimir-activo) {
-    display: none !important;
-  }
-
-  /* Quita bordes, fondos y rellenos de la tarjeta activa */
+  /* Al imprimir una etiqueta solo se ve esa tarjeta, sin bordes ni botones. */
+  #productos .card:not(.imprimir-activo) { display: none !important; }
   #productos,
   #productos .card.imprimir-activo {
     display: block !important;
@@ -486,19 +739,11 @@ footer {
     padding: 0 !important;
     margin: 0 !important;
   }
-
-  /* Oculta TODO el contenido de la tarjeta (nombre, SKU, precio, botón) EXCEPTO el código de barras */
-  #productos .card.imprimir-activo > *:not(.etiqueta-impresion) {
-    display: none !important;
-  }
-
-  /* Muestra únicamente el bloque del código de barras listo para recortar */
+  #productos .card.imprimir-activo > *:not(.etiqueta-impresion) { display: none !important; }
   #productos .card.imprimir-activo > .etiqueta-impresion {
-    display: inline-block !important;
+    display: block !important;
     border: none !important;
     margin: 0 !important;
     padding: 0.5rem !important;
-    text-align: center;
   }
-}
 }

@@ -7,7 +7,8 @@
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Clarity+City:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+  <script>(function(){try{var t=localStorage.getItem("ferreteria:tema");if(t!=="oscuro"&&t!=="claro"){t=matchMedia("(prefers-color-scheme: dark)").matches?"oscuro":"claro"}document.documentElement.dataset.tema=t}catch(e){document.documentElement.dataset.tema="claro"}})()</script>
   <link rel="stylesheet" href="/styles.css">
 </head>
 <body data-vista="login">
@@ -28,12 +29,10 @@
           <legend>Acceso a la API</legend>
 
           <label for="email">Correo electrónico</label>
-          <input id="email" name="email" type="email" required autocomplete="username" aria-describedby="ayuda-email">
-          <p class="ayuda" id="ayuda-email">admin@example.com · cajero@example.com · bodeguero@example.com</p>
+          <input id="email" name="email" type="email" required autocomplete="username">
 
           <label for="password">Contraseña</label>
-          <input id="password" name="password" type="password" required autocomplete="current-password" aria-describedby="ayuda-password">
-          <p class="ayuda" id="ayuda-password">Usuarios de prueba: contraseña “password”.</p>
+          <input id="password" name="password" type="password" required autocomplete="current-password">
         </fieldset>
 
         <p class="acciones">
@@ -50,6 +49,6 @@
     </footer>
   </div>
 
-  <script type="module" src="/src/main.js"></script>
+  <script type="module" src="/src/paginas/login.js"></script>
 </body>
 </html>

@@ -3,54 +3,154 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Catálogo — Ferretería Pescado Volador</title>
+  <title>Productos — Ferretería Pescado Volador</title>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Clarity+City:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+  <script>(function(){try{var t=localStorage.getItem("ferreteria:tema");if(t!=="oscuro"&&t!=="claro"){t=matchMedia("(prefers-color-scheme: dark)").matches?"oscuro":"claro"}document.documentElement.dataset.tema=t}catch(e){document.documentElement.dataset.tema="claro"}})()</script>
   <link rel="stylesheet" href="/styles.css">
 </head>
-<body data-vista="catalogo">
+<body data-vista="productos">
   <a class="skip" href="#contenido">Saltar al contenido</a>
   <header class="sitio">
-    <div class="container header-inner">
+    <div class="header-inner">
+      <a class="marca" href="index.html">Pescado Volador</a>
       <nav class="nav" aria-label="Principal">
-        <a href="index.html" aria-current="page">Catálogo</a>
-        <a href="ventas.html">Ventas</a>
-        <a href="historial.html">Historial</a>
+        <a href="index.html" aria-current="page" data-permiso="view products">Productos</a>
+        <a href="ventas.html" data-permiso="view sales">Ventas</a>
+        <a href="recepcion.html" data-permiso="receive purchases">Recepción</a>
+        <a href="compras.html" data-permiso="view purchases">Compras</a>
+        <a href="proveedores.html" data-permiso="view suppliers">Proveedores</a>
+        <a href="clientes.html" data-permiso="view customers">Clientes</a>
+        <a href="movimientos.html" data-permiso="view inventory-movements">Movimientos</a>
+        <a href="catalogos.html" data-permiso="view categories">Catálogos</a>
       </nav>
-      <p class="acciones">
-        <button id="btn-expirar" type="button">Simular expiración</button>
+      <div class="acciones">
+        <button id="btn-tema" type="button" aria-pressed="false" aria-label="Modo oscuro">☾</button>
         <button id="btn-salir" type="button">Cerrar sesión</button>
-      </p>
+      </div>
     </div>
   </header>
 
   <div class="container">
-    <main id="contenido" class="layout layout-filtros">
-      <h1>Catálogo</h1>
-      <noscript><p class="error">Esta pantalla necesita JavaScript para consumir la API (Laboratorio 9).</p></noscript>
+    <main id="contenido" class="layout">
+      <h1>Productos</h1>
+      <noscript><p class="error">Esta pantalla necesita JavaScript para consumir la API.</p></noscript>
 
-      <section aria-labelledby="t-filtros">
-        <h2 id="t-filtros">Filtros</h2>
-        <form id="filtros-form" role="search">
-          <label for="q">Buscar por nombre o SKU</label>
-          <input id="q" name="q" type="search" autocomplete="off" aria-describedby="ayuda-q">
-          <p class="ayuda" id="ayuda-q">Ej. martillo, SKU-MART-016-001 · se busca automáticamente tras 300&nbsp;ms de inactividad.</p>
-          <p class="acciones">
-            <button class="btn-primario" type="submit">Buscar</button>
-          </p>
-        </form>
+      <section aria-labelledby="t-herramientas" class="ancho-completo">
+        <h2 id="t-herramientas" class="sr-only">Buscar y agregar productos</h2>
+        <div class="barra-herramientas">
+          <form id="buscar-form" role="search">
+            <div>
+              <label for="q">Buscar por nombre o SKU</label>
+              <input id="q" name="q" type="search" autocomplete="off" aria-describedby="ayuda-q">
+              <p class="ayuda" id="ayuda-q">La búsqueda se actualiza sola al escribir.</p>
+            </div>
+          </form>
+
+          <form id="barras-form" role="search">
+            <div>
+              <label for="codigo-barras">Código de barras</label>
+              <input id="codigo-barras" name="codigo_barras" type="text" autocomplete="off" aria-describedby="ayuda-barras">
+              <p class="ayuda" id="ayuda-barras">Escriba el código o use la pistola lectora y presione Enter.</p>
+            </div>
+            <button type="submit">Buscar código</button>
+          </form>
+
+          <button type="button" id="btn-nuevo-producto" class="btn-primario" data-permiso="create products">Nuevo producto</button>
+        </div>
+        <p id="accion-estado" class="ayuda" role="status" aria-live="polite"></p>
       </section>
 
-      <section aria-labelledby="t-prod">
-        <h2 id="t-prod">Productos</h2>
+      <section aria-labelledby="t-prod" class="ancho-completo" data-permiso="view products">
+        <h2 id="t-prod">Listado</h2>
         <div id="lista-estado" role="status" aria-live="polite"></div>
-        
         <div id="productos" class="grid-productos"></div>
         <nav id="paginacion" aria-label="Paginación de productos"></nav>
       </section>
+
+      <details id="resumen" class="ancho-completo" data-permiso="view products">
+        <summary>Resumen de inventario por categoría</summary>
+        <div id="resumen-estado" role="status" aria-live="polite"></div>
+        <div id="resumen-contenido" class="tabla-scroll"></div>
+      </details>
     </main>
+
+    <dialog id="dialogo-producto" aria-labelledby="t-dialogo-producto">
+      <div class="cabecera-dialogo">
+        <h2 id="t-dialogo-producto">Producto</h2>
+        <button type="button" id="btn-cerrar-detalle">Cerrar</button>
+      </div>
+
+      <section id="detalle" aria-labelledby="t-detalle" data-permiso="view products" tabindex="-1" hidden>
+        <h3 id="t-detalle" class="sr-only">Detalle del producto</h3>
+        <div id="detalle-contenido"></div>
+        <p class="acciones">
+          <button type="button" id="btn-editar-producto" class="btn-primario" hidden>Editar producto</button>
+          <button type="button" id="btn-eliminar-producto" class="btn-peligro" hidden>Eliminar producto</button>
+        </p>
+      </section>
+
+      <section id="editar-producto" aria-labelledby="t-editar" data-permiso="update products" tabindex="-1" hidden>
+        <h3 id="t-editar">Editar producto</h3>
+        <p class="ayuda">El SKU, el código de barras, la categoría, la marca y la unidad no se editan aquí.</p>
+        <form id="editar-form" novalidate>
+          <fieldset>
+            <legend>Datos del producto</legend>
+
+            <label for="ed-nombre">Nombre</label>
+            <input id="ed-nombre" name="name" type="text" maxlength="150" required aria-describedby="err-name">
+            <p class="ayuda" data-error="name" id="err-name" aria-live="polite"></p>
+
+            <label for="ed-descripcion">Descripción</label>
+            <textarea id="ed-descripcion" name="description" maxlength="1000" aria-describedby="err-description"></textarea>
+            <p class="ayuda" data-error="description" id="err-description" aria-live="polite"></p>
+
+            <label for="ed-precio">Precio (₡)</label>
+            <input id="ed-precio" name="price" type="number" min="0" max="99999999.99" step="0.01" required aria-describedby="err-price">
+            <p class="ayuda" data-error="price" id="err-price" aria-live="polite"></p>
+
+            <label for="ed-impuesto">Impuesto (%)</label>
+            <input id="ed-impuesto" name="tax_rate" type="number" min="0" max="100" step="0.01" aria-describedby="err-tax_rate">
+            <p class="ayuda" data-error="tax_rate" id="err-tax_rate" aria-live="polite"></p>
+
+            <label for="ed-stock">Stock actual</label>
+            <input id="ed-stock" name="stock_quantity" type="number" min="0" max="1000000" step="1" required aria-describedby="err-stock_quantity">
+            <p class="ayuda" data-error="stock_quantity" id="err-stock_quantity" aria-live="polite"></p>
+
+            <label for="ed-minimo">Stock mínimo</label>
+            <input id="ed-minimo" name="minimum_stock" type="number" min="0" max="1000000" step="1" aria-describedby="err-minimum_stock">
+            <p class="ayuda" data-error="minimum_stock" id="err-minimum_stock" aria-live="polite"></p>
+
+            <label for="ed-maximo">Stock máximo</label>
+            <input id="ed-maximo" name="maximum_stock" type="number" min="0" max="1000000" step="1" aria-describedby="err-maximum_stock">
+            <p class="ayuda" data-error="maximum_stock" id="err-maximum_stock" aria-live="polite"></p>
+
+            <label for="ed-peso">Peso</label>
+            <input id="ed-peso" name="weight" type="number" min="0" max="100000" step="0.01" aria-describedby="err-weight">
+            <p class="ayuda" data-error="weight" id="err-weight" aria-live="polite"></p>
+
+            <label><input name="is_active" type="checkbox"> Producto activo</label>
+          </fieldset>
+
+          <p class="acciones">
+            <button class="btn-primario" type="submit">Guardar cambios</button>
+            <button type="button" id="btn-cancelar-editar">Volver al detalle</button>
+          </p>
+          <p id="estado-editar" class="ayuda" role="status" aria-live="polite"></p>
+        </form>
+      </section>
+    </dialog>
+
+    <dialog id="dialogo-nuevo" aria-labelledby="t-dialogo-nuevo" data-permiso="create products">
+      <div class="cabecera-dialogo">
+        <h2 id="t-dialogo-nuevo">Nuevo producto</h2>
+        <button type="button" id="btn-cerrar-nuevo">Cerrar</button>
+      </div>
+      <div id="form-nuevo-producto"></div>
+    </dialog>
+
     <footer>
       <address class="contacto">
         <p>Correo electrónico: info@ferreteriapescadofeliz.com</p>
@@ -59,6 +159,6 @@
     </footer>
   </div>
 
-  <script type="module" src="/src/main.js"></script>
+  <script type="module" src="/src/paginas/productos.js"></script>
 </body>
 </html>
